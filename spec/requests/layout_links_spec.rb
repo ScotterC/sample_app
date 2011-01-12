@@ -67,5 +67,30 @@ describe "LayoutLinks" do
       response.should have_selector("a", :href => user_path(@user), :content => "Profile")
     end
     
+    it "should have a user index link" do
+      visit root_path
+      response.should have_selector("a", :href => users_path, :content => "Users")
+    end
+    
+    it "should not have a delete link" do
+      visit users_path
+      response.should_not have_selector("a", :href => user_path(@user), :content => "delete")
+    end
+    
   end
+  
+  describe "when admin signed in" do
+    
+    before(:each) do
+      @admin = Factory(:user, :email => "admin@example.com", :admin => true)
+      integration_sign_in(@admin)
+    end
+    
+    it "should have a delete link" do
+      visit users_path
+      response.should have_selector("a", :href => user_path(@admin), :content => "delete")
+    end
+    
+  end
+  
 end

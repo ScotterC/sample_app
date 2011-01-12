@@ -122,9 +122,35 @@ describe UsersController do
       response.should have_selector("input[name='user[password_confirmation]'][type='password']")
     end
     
+    describe "access to signed in users" do
+      
+      before(:each) do
+        @user = test_sign_in(Factory(:user))
+      end
+      
+      it "should not be available to signed in users" do
+        get :new, :id => @user
+        response.should redirect_to(root_path)
+      end
+      
+    end
+    
   end
 
   describe "POST 'create'" do
+    
+    describe "access to signed in users" do
+      
+      before(:each) do
+        @user = test_sign_in(Factory(:user))
+      end
+      
+      it "should not be available to signed in users" do
+        post :create, :id => @user
+        response.should redirect_to(root_path)
+      end
+      
+    end
     
     describe "failure" do
       
@@ -327,8 +353,8 @@ describe UsersController do
     describe "as an admin user" do
       
       before(:each) do
-        admin = Factory(:user, :email => "admin@example.com", :admin => true)
-        test_sign_in(admin)
+        @admin = Factory(:user, :email => "admin@example.com", :admin => true)
+        test_sign_in(@admin)
       end
       
       it "should destroy user" do
@@ -340,6 +366,12 @@ describe UsersController do
       it "should redirect to the users page" do
         delete :destroy, :id => @user
         response.should redirect_to(users_path)
+      end
+      
+      it "should not destroy admin" do
+        lambda do
+          delete :destroy, :id => @admin
+        end.should_not change(User, :count)
       end
       
     end
