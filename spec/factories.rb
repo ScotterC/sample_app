@@ -9,3 +9,9 @@ end
 Factory.sequence :email do |n|
   "person-#{n}@example.com"
 end
+
+# micropost.association is a Factory Girl method to declare associations
+Factory.define :micropost do |micropost|
+  micropost.content "Foo bar"
+  micropost.association :user
+end
